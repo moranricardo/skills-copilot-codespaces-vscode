@@ -1,0 +1,10 @@
+# Telemetría de estado local (Evita ruido en los commits)
+state.json
+
+# Dependencias de Node.js
+node_modules/
+package-lock.json
+
+# Logs del sistema y de errores
+*.log
+npm-debug.log*
