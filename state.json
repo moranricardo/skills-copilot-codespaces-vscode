@@ -1,8 +1,7 @@
 {
-  "module": "gerrit_fetcher",
-  "timestamp": "2026-06-12T15:50:58.510Z",
-  "status": "STABLE",
-  "message": "Datos devueltos y purificados con éxito.",
-  "cambiosDetectados": 5,
-  "ultimoCambioSubject": "Add a11y support for ScrollField.kt."
+  "ExtractorGerrit": {
+    "timestamp": "2026-06-14T13:22:51.005Z",
+    "estado": "ESTABLE",
+    "cambiosDetectados": 5
+  }
 }

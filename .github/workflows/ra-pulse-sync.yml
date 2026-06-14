@@ -1,0 +1,47 @@
+name: Ra Pulse - Orquestador Maestro
+
+on:
+  schedule:
+    # Se ejecuta automáticamente cada hora en punto (El latido constante)
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # Te permite presionar un botón en la app/web de GitHub para forzar el pulso manualmente
+
+jobs:
+  sincronizar-gerrit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Permiso crucial para que el bot pueda actualizar el state.json
+
+    steps:
+      - name: Descargar el Código del Repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Entorno de Node.js v26
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+
+      - name: Inicializar Estado si no existe
+        run: |
+          if [ ! -f state.json ]; then
+            echo '{}' > state.json
+          fi
+
+      - name: Ejecutar Extractor y Saneador de Gerrit
+        run: node index.js
+
+      - name: Validar Cambios en la Telemetría y Auto-Commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot [Ra-Pulse]"
+          
+          # Verificar si state.json sufrió mutaciones tras el parseo
+          if ! git diff --exit-code state.json; then
+            echo "[MAAT] Cambios detectados en la telemetría. Actualizando repositorio..."
+            git add state.json
+            git commit -m "chronicle: actualización automática de telemetría de estado (Gerrit Sync)"
+            git push origin main
+          else
+            echo "[PULSO] Sin cambios en el estado. El inframundo permanece en equilibrio."
+          fi

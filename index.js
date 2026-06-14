@@ -1,62 +1,90 @@
+// index.js - El Latido Base: Extractor y Saneador de Gerrit API (ESM Nativo)
 import https from 'https';
-import fs from 'fs/promises';
+import fs from 'fs';
 
-// 1. Cargar el contrato de configuración que creaste con éxito
-let config;
-try {
-    const configFile = await fs.readFile('./config.json', 'utf8');
-    config = JSON.parse(configFile);
-} catch (error) {
-    console.error('❌ No se pudo leer config.json:', error.message);
-    process.exit(1);
-}
+// Configuración sobre Código: Parámetros del ecosistema
+const CONFIG = {
+  gerritUrl: 'https://android-review.googlesource.com',
+  endpoint: '/changes/?q=status:open&n=5',
+  stateFile: './state.json'
+};
 
-// 2. Mapeo del Pulso (Telemetría asíncrona)
-async function updatePulse(status, message, extra = {}) {
-    const pulse = {
-        module: "gerrit_fetcher",
-        timestamp: new Date().toISOString(),
-        status: status,
-        message: message,
-        ...extra
-    };
-    await fs.writeFile(config.pulseOutputFile, JSON.stringify(pulse, null, 2));
-    console.log(`[Ra Pulse] -> ${status}: ${message}`);
-}
-
-// 3. Purificación anti-XSS de Gerrit
-function sanitizeResponse(rawData) {
-    const magicPrefix = ")]}'\n";
-    if (rawData.startsWith(magicPrefix)) {
-        return rawData.slice(magicPrefix.length);
+/**
+ * Registra la telemetría del estado en el archivo centralizado de salud
+ */
+function reportarPulso(modulo, estado, detalles = {}) {
+  let gemaEstado = {};
+  try {
+    if (fs.existsSync(CONFIG.stateFile)) {
+      gemaEstado = JSON.parse(fs.readFileSync(CONFIG.stateFile, 'utf8'));
     }
-    return rawData;
+  } catch (e) {
+    // Si el archivo está corrupto o no existe, renace vacío
+  }
+
+  gemaEstado[modulo] = {
+    timestamp: new Date().toISOString(),
+    estado: estado,
+    ...detalles
+  };
+
+  fs.writeFileSync(CONFIG.stateFile, JSON.stringify(gemaEstado, null, 2));
 }
 
-// 4. Invocación al Inframundo de Gerrit
-function runPulse() {
-    const targetUrl = `${config.gerritUrl}/changes/?q=${config.query}`;
-    console.log(`🌅 Iniciando ciclo. Conectando a: ${config.gerritUrl}`);
+/**
+ * Sanea el prefijo mágico anti-XSS de Gerrit y parsea el JSON de forma segura
+ */
+function sanearRespuestaGerrit(textoBruto) {
+  const prefijoAntiXSS = ")]}'\n";
+  
+  if (textoBruto.startsWith(prefijoAntiXSS)) {
+    return JSON.parse(textoBruto.slice(prefijoAntiXSS.length));
+  }
+  
+  return JSON.parse(textoBruto);
+}
 
-    https.get(targetUrl, (res) => {
-        let rawData = '';
-        res.on('data', (chunk) => { rawData += chunk; });
-        res.on('end', async () => {
-            try {
-                const cleanData = sanitizeResponse(rawData.trim());
-                const changes = JSON.parse(cleanData);
-                
-                await updatePulse('STABLE', 'Datos devueltos y purificados con éxito.', {
-                    cambiosDetectados: changes.length,
-                    ultimoCambioSubject: changes[0] ? changes[0].subject : 'Ninguno'
-                });
-            } catch (e) {
-                await updatePulse('DUAT_ERROR', `Fallo de parseo: ${e.message}`);
-            }
+/**
+ * Ejecuta la consulta al endpoint de Gerrit
+ */
+function consultarCambiosAbiertos() {
+  const urlCompleta = `${CONFIG.gerritUrl}${CONFIG.endpoint}`;
+  
+  console.log(`[Ra Pulse] Iniciando consulta a la barca de Gerrit: ${urlCompleta}`);
+
+  https.get(urlCompleta, {
+    headers: { 'Accept': 'application/json' }
+  }, (res) => {
+    let cuerpo = '';
+
+    res.on('data', (chunk) => { cuerpo += chunk; });
+
+    res.on('end', () => {
+      try {
+        if (res.statusCode !== 200) {
+          throw new Error(`Error en el Inframundo HTTP: Código de estado ${res.statusCode}`);
+        }
+
+        const cambios = sanearRespuestaGerrit(cuerpo);
+        
+        console.log(`\n[Maat Alineado] Se han extraído exitosamente ${cambios.length} cambios abiertos:`);
+        cambios.forEach(cambio => {
+          console.log(` - [${cambio._number}] ${cambio.subject} (Por: ${cambio.owner ? cambio.owner.name : 'Desconocido'})`);
         });
-    }).on('error', async (err) => {
-        await updatePulse('DUAT_ERROR', `Error de comunicación: ${err.message}`);
+
+        reportarPulso('ExtractorGerrit', 'ESTABLE', { cambiosDetectados: cambios.length });
+
+      } catch (error) {
+        console.error(`[Apofis Detectado] Error procesando los datos: ${error.message}`);
+        reportarPulso('ExtractorGerrit', 'ERROR', { mensaje: error.message });
+      }
     });
+
+  }).on('error', (error) => {
+    console.error(`[Fallo de Red] La conexión no pudo cruzar el Duat: ${error.message}`);
+    reportarPulso('ExtractorGerrit', 'CAÍDO', { mensaje: error.message });
+  });
 }
 
-runPulse();
+// Ejecución del flujo base
+consultarCambiosAbiertos();
