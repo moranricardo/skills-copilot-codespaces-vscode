@@ -1,9 +1,8 @@
 {
-  "status": "degraded",
-  "last_pulse": "2026-06-14T06:40:00Z",
-  "active_modules": [
-    "gerrit-monitor",
-    "telemetry-radio"
-  ],
-  "error_logs": []
+  "timestamp": "2026-06-14T13:49:13.136Z",
+  "radio": "skills-copilot-codespaces",
+  "status": "stable",
+  "log": "Auditoría completada exitosamente.",
+  "cambiosAnalizados": 5,
+  "aprobadosPlus2": 4
 }
