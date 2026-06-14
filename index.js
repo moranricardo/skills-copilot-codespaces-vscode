@@ -1,11 +1,11 @@
-// index.js - Módulo de Conexión Gerrit (Radio Auditor - ESM)
+// index.js - Módulo de Conexión Gerrit (Telemetría Refinada - ESM)
 import https from 'https';
 import fs from 'fs';
 
 // Configuración sobre Código: Parámetros del ecosistema
 const CONFIG = {
   gerritHost: 'android-review.googlesource.com',
-  // Endpoint modificado: Ahora pedimos detalles de las etiquetas (LABELS) para revisar los votos
+  // Consultamos los últimos cambios con detalle de etiquetas para ver aprobaciones
   endpoint: '/changes/?q=status:open&n=5&o=LABELS',
   stateFile: './state.json'
 };
@@ -22,23 +22,23 @@ function sanitizeGerritResponse(rawData) {
 }
 
 /**
- * Registra la telemetría del estado en el archivo centralizado de salud
+ * Lee la memoria histórica guardada en el archivo de estado central
  */
-function reportTelemetry(status, message, details = {}) {
-  const state = {
-    timestamp: new Date().toISOString(),
-    radio: "skills-copilot-codespaces",
-    status: status,
-    log: message,
-    ...details
-  };
-  fs.writeFileSync(CONFIG.stateFile, JSON.stringify(state, null, 2));
+function readCurrentState() {
+  try {
+    if (fs.existsSync(CONFIG.stateFile)) {
+      return JSON.parse(fs.readFileSync(CONFIG.stateFile, 'utf8'));
+    }
+  } catch (error) {
+    console.error('[Apofis] Error leyendo el estado actual:', error.message);
+  }
+  return { last_pulse: new Date().toISOString(), alerts: [], tracked_changes: {} };
 }
 
 /**
- * Ejecuta la auditoría sobre las revisiones abiertas de Gerrit
+ * Ejecuta la auditoría del pulso y refina la telemetría ante pérdidas de Code-Review +2
  */
-function auditGerritPulse() {
+function auditPulseAndRefineTelemetry() {
   const options = {
     hostname: CONFIG.gerritHost,
     path: CONFIG.endpoint,
@@ -46,7 +46,7 @@ function auditGerritPulse() {
     headers: { 'Accept': 'application/json' }
   };
 
-  console.log(`[Ra Pulse] Iniciando escaneo auditor en: ${CONFIG.gerritHost}...`);
+  console.log(`[Ra Pulse] Conectando con las puertas de ${CONFIG.gerritHost} para auditoría...`);
 
   const req = https.get(options, (res) => {
     let rawData = '';
@@ -60,45 +60,65 @@ function auditGerritPulse() {
         }
 
         const cambios = sanitizeGerritResponse(rawData);
-        console.log(`\n[Maat] Datos extraídos con éxito. Evaluando ${cambios.length} cambios abiertos:\n`);
+        const state = readCurrentState();
+        
+        // Asegurar que las llaves esenciales existan en el estado
+        if (!state.alerts) state.alerts = [];
+        if (!state.tracked_changes) state.tracked_changes = {};
 
-        let parchesAprobados = 0;
+        console.log(`\n[Maat] Evaluando e hilando telemetría para ${cambios.length} cambios abiertos:`);
 
         cambios.forEach(cambio => {
-          // Extraemos el estado de la etiqueta 'Code-Review'
+          const changeId = cambio.change_id;
           const codeReview = cambio.labels && cambio.labels['Code-Review'];
           
-          // Verificamos si tiene la bendición definitiva (voto aprobado '+2')
-          const tieneAprobacionPlus2 = codeReview && codeReview.approved ? "✓ Code-Review +2 (APROBADO)" : "✗ Pendiente de Revisión";
+          // Comprobar si el parche tiene actualmente la aprobación definitiva (+2)
+          const tieneAprobacionActual = !!(codeReview && codeReview.approved);
 
-          if (codeReview && codeReview.approved) parchesAprobados++;
+          // Buscar el registro histórico en nuestro state.json previo
+          const historialPrevio = state.tracked_changes[changeId];
 
-          console.log(` 📦 Cambio: [${cambio._number}]`);
-          console.log(`    Subject:  ${cambio.subject}`);
-          console.log(`    ID Único: ${cambio.change_id}`);
-          console.log(`    Estado:   ${tieneAprobacionPlus2}`);
-          console.log(`    Por:      ${cambio.owner ? cambio.owner.name : 'Desconocido'}\n--------------------------------------`);
+          // 🚨 DETECTOR DE ALERTAS: Si antes tenía +2 y ahora ya no lo tiene
+          if (historialPrevio && historialPrevio.had_plus_two && !tieneAprobacionActual) {
+            console.warn(`\n🚨 ALERTANOMALÍA: El cambio [${cambio._number}] perdió su Code-Review +2`);
+            
+            state.alerts.push({
+              timestamp: new Date().toISOString(),
+              change_id: changeId,
+              number: cambio._number,
+              subject: cambio.subject,
+              type: "LOSS_OF_CODE_REVIEW_PLUS_TWO",
+              message: "Se ha revocado la aprobación crítica en el servidor de Gerrit."
+            });
+          }
+
+          // Actualizar el mapa de seguimiento con el estado actual
+          state.tracked_changes[changeId] = {
+            number: cambio._number,
+            subject: cambio.subject,
+            had_plus_two: tieneAprobacionActual,
+            updated_at: cambio.updated
+          };
         });
 
-        reportTelemetry('stable', 'Auditoría completada exitosamente.', { 
-          cambiosAnalizados: cambios.length,
-          aprobadosPlus2: parchesAprobados
-        });
+        // Guardar el pulso sincronizado
+        state.last_pulse = new Date().toISOString();
+        fs.writeFileSync(CONFIG.stateFile, JSON.stringify(state, null, 2));
+        
+        console.log(`\n✨ Telemetría refinada guardada con éxito en ${CONFIG.stateFile}`);
 
       } catch (error) {
-        console.error('[Apofis] Error al procesar los datos de auditoría:', error.message);
-        reportTelemetry('duat_error', `Error de parseo en auditoría: ${error.message}`);
+        console.error('[Apofis] Error al procesar los datos analíticos:', error.message);
       }
     });
   });
 
   req.on('error', (error) => {
-    console.error('[Apofis] Amenaza en la red:', error.message);
-    reportTelemetry('duat_error', `Error de red en auditoría: ${error.message}`);
+    console.error('[Apofis] Error de comunicación en la red:', error.message);
   });
 
   req.end();
 }
 
-// Iniciar el ciclo del auditor
-auditGerritPulse();
+// Iniciar el análisis de telemetría avanzada
+auditPulseAndRefineTelemetry();
