@@ -1,20 +1,14 @@
 version: 2
 updates:
-  # 1. Vigilante del Ciclo de Ra (Mantiene las Actions de GitHub actualizadas)
+  # 1. Vigilante del Ciclo de Ra (Mantenimiento de GitHub Actions)
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
 
-  # 2. Guardián de Dependencias Node.js (Mantiene el pulso de tus módulos y contratos de datos)
+  # 2. Guardián de Dependencias Node (Ecosistema NPM)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly" # Configurado semanal para reaccionar rápido a parches de seguridad
+      interval: "weekly"
     open-requests-limit: 5
-
-  # 3. Entorno de Desarrollo (Mantener solo si existe la carpeta .devcontainer/)
-  - package-ecosystem: "devcontainers"
-    directory: "/"
-    schedule:
-      interval: "monthly"
