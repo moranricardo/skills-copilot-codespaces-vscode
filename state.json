@@ -1,7 +1,9 @@
 {
-  "ExtractorGerrit": {
-    "timestamp": "2026-06-14T13:32:45.819Z",
-    "estado": "ESTABLE",
-    "cambiosDetectados": 5
-  }
+  "status": "degraded",
+  "last_pulse": "2026-06-14T06:40:00Z",
+  "active_modules": [
+    "gerrit-monitor",
+    "telemetry-radio"
+  ],
+  "error_logs": []
 }

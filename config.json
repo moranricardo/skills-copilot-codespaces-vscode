@@ -1,5 +1,5 @@
 {
   "gerritUrl": "https://android-review.googlesource.com",
-  "query": "status:open&n=5",
+  "query": "status:open (label:Code-Review-2 OR label:Verified-1) project:kernel/common",
   "pulseOutputFile": "state.json"
 }
