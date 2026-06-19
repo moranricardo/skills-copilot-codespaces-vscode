@@ -1,14 +1,7 @@
 version: 2
 updates:
-  # 1. Vigilante del Ciclo de Ra (Mantenimiento de GitHub Actions)
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-
-  # 2. Guardián de Dependencias Node (Ecosistema NPM)
+  # Buscador estándar de paquetes npm (si usas Node)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-requests-limit: 5
