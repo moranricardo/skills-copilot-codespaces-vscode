@@ -1,20 +1,17 @@
 {
-  "last_pulse": "2026-06-14T14:59:03.349Z",
-  "radio": "curly-enigma-auditor",
-  "status": "attention_required",
+  "last_pulse": "2026-06-19T19:27:53.115Z",
+  "radio": "unified-ecosystem-auditor",
+  "status": "stable",
   "telemetry": {
-    "pullRequestsAnalizados": 1,
-    "issuesAnalizadas": 1,
-    "hasAnomalies": true,
-    "alerts": [
-      {
-        "type": "DEPENDENCY_BUMP_DETECTED",
-        "message": "El PR #3 (actions/checkout) requiere verificación de compatibilidad."
-      },
-      {
-        "type": "CRITICAL_REFACTOR_PENDING",
-        "message": "La propuesta #4 (\"mobile-es-419\") está pendiente de auditoría estructural."
-      }
-    ]
+    "github": {
+      "pullRequests": 0,
+      "issues": 0,
+      "alerts": []
+    },
+    "gerrit": {
+      "cambiosAbiertos": 10,
+      "alerts": []
+    },
+    "hasAnomalies": false
   }
 }
