@@ -1,0 +1,8 @@
+{
+  "name": "skills-copilot-codespaces-vscode",
+  "version": "1.0.0",
+  "description": "Ra Pulse Radio Module",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {}
+}
