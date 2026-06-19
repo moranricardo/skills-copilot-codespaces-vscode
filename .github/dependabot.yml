@@ -1,7 +1,7 @@
 version: 2
 updates:
-  # Buscador estándar de paquetes npm (si usas Node)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
