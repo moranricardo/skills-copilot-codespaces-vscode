@@ -1,7 +1,7 @@
 {
-  "last_pulse": "2026-06-20T10:07:51.021Z",
+  "last_pulse": "2026-06-20T12:24:32.501Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "stable",
+  "status": "attention_required",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -10,8 +10,10 @@
     },
     "gerrit": {
       "cambiosAbiertos": 10,
-      "alerts": []
+      "alerts": [
+        "Cambio #4128234: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (services/core/java/com/android/server/pm/ParallelPackageParser.java)."
+      ]
     },
-    "hasAnomalies": false
+    "hasAnomalies": true
   }
 }
