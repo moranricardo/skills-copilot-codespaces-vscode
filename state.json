@@ -1,7 +1,7 @@
 {
-  "last_pulse": "2026-06-29T02:46:07.759Z",
+  "last_pulse": "2026-06-29T07:24:07.288Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "stable",
+  "status": "attention_required",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -10,8 +10,10 @@
     },
     "gerrit": {
       "cambiosAbiertos": 10,
-      "alerts": []
+      "alerts": [
+        "Cambio #4148235: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (packages/SystemUI/AndroidManifest.xml)."
+      ]
     },
-    "hasAnomalies": false
+    "hasAnomalies": true
   }
 }
