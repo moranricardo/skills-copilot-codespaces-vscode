@@ -1,5 +1,5 @@
 {
-  "last_pulse": "2026-07-01T09:33:35.092Z",
+  "last_pulse": "2026-07-01T12:28:53.181Z",
   "radio": "unified-ecosystem-auditor",
   "status": "attention_required",
   "telemetry": {
@@ -11,6 +11,7 @@
     "gerrit": {
       "cambiosAbiertos": 10,
       "alerts": [
+        "Cambio #3560345: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (services/core/java/com/android/server/pm/ComputerEngine.java).",
         "Cambio #4148235: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (packages/SystemUI/AndroidManifest.xml)."
       ]
     },
