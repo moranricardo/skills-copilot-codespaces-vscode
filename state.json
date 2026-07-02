@@ -1,7 +1,7 @@
 {
-  "last_pulse": "2026-07-02T22:04:50.624Z",
+  "last_pulse": "2026-07-02T23:58:23.532Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "attention_required",
+  "status": "stable",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -10,10 +10,8 @@
     },
     "gerrit": {
       "cambiosAbiertos": 10,
-      "alerts": [
-        "Cambio #3560345: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (services/core/java/com/android/server/pm/ComputerEngine.java)."
-      ]
+      "alerts": []
     },
-    "hasAnomalies": true
+    "hasAnomalies": false
   }
 }
