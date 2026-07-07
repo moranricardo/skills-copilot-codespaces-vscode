@@ -1,7 +1,7 @@
 {
-  "last_pulse": "2026-07-07T08:17:04.187Z",
+  "last_pulse": "2026-07-07T11:40:27.269Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "attention_required",
+  "status": "stable",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -10,10 +10,8 @@
     },
     "gerrit": {
       "cambiosAbiertos": 10,
-      "alerts": [
-        "Cambio #4115694: Modificación sospechosa en el PackageManager o Manifiesto del Sistema (services/core/java/com/android/server/pm/PackageInstallerService.java)."
-      ]
+      "alerts": []
     },
-    "hasAnomalies": true
+    "hasAnomalies": false
   }
 }
