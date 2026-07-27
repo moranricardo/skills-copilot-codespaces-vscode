@@ -1,0 +1,17 @@
+{
+  "last_pulse": "2026-07-27T06:20:46.593Z",
+  "radio": "unified-ecosystem-auditor",
+  "status": "stable",
+  "telemetry": {
+    "github": {
+      "pullRequests": 0,
+      "issues": 0,
+      "alerts": []
+    },
+    "gerrit": {
+      "cambiosAbiertos": 10,
+      "alerts": []
+    },
+    "hasAnomalies": false
+  }
+}

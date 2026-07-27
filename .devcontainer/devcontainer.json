@@ -1,0 +1,10 @@
+{
+  "name": "GitHub Copilot Sandbox",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot"
+      ]
+    }
+  }
+}
