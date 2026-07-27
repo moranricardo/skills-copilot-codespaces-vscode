@@ -1,7 +1,7 @@
 {
   "last_pulse": "2026-07-27T06:20:46.593Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "stable",
+  "status": "STABLE",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -13,5 +13,16 @@
       "alerts": []
     },
     "hasAnomalies": false
-  }
+  },
+  "gerrit": {
+    "last_seen_change_id": "Ib8d4f5c69c71072e3c76f582f04bdc17d992b7ac",
+    "pending_reviews": 5
+  },
+  "radios": {
+    "didactic-octo-chrome": {
+      "last_sync": "2026-07-27T10:34:37.458Z",
+      "status": "ACTIVE"
+    }
+  },
+  "last_pulsecheck": "2026-07-27T10:34:37.458Z"
 }
