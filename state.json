@@ -1,7 +1,7 @@
 {
   "last_pulse": "2026-07-27T06:20:46.593Z",
   "radio": "unified-ecosystem-auditor",
-  "status": "STABLE",
+  "status": "DEGRADED",
   "telemetry": {
     "github": {
       "pullRequests": 0,
@@ -24,5 +24,5 @@
       "status": "ACTIVE"
     }
   },
-  "last_pulsecheck": "2026-08-04T23:57:13.432Z"
+  "last_pulsecheck": "2026-08-05T02:22:18.119Z"
 }
